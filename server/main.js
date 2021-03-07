@@ -18,7 +18,11 @@ app.use(
 );
 
 app.get("/", async (req, res) => {
-	res.render("index", {});
+    let event = await getCurrentEvent();
+    console.log(event)
+	res.render("index", {
+        event: event
+    });
 });
 
 app.get("/booking", async (req, res) => {
@@ -71,6 +75,15 @@ function connectToMongo(dbName, connectURL) {
 
 async function checkIfTimeInDB(time) {
 	return await dbModule.findTime(Ad, time);
+}
+
+async function getCurrentEvent() {
+	let date = new Date();
+	date.setMinutes(0);
+	date.setSeconds(0);
+	date.setMilliseconds(0);
+    console.log(date)
+    return await dbModule.findTime(Ad, date)
 }
 
 function createAd(titleIN, linkIN, descIN, timeIN) {

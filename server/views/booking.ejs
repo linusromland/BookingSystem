@@ -20,8 +20,6 @@
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 		<style>
-
-
 			body {
 				font-family: "Poppins", sans-serif;
 				height: 100vh;
@@ -85,39 +83,50 @@
 	<body>
 		<div class="wrapper fadeInDown">
 			<div id="formContent">
+                <% if (availableTimes.length > 0) { %>
+
 				<div class="fadeIn first">
 					<h1>Book you Ad!</h1>
 				</div>
+
 				<form method="POST" action="/book">
 					<input
 						type="text"
 						placeholder="Title text"
 						name="title"
 						id="title"
-                        required
+						required
 					/>
 					<input
 						type="text"
 						placeholder="Description text"
 						name="desc"
 						id="desc"
-                        required
+						required
 					/>
 					<input
 						type="url"
 						placeholder="Link to your site"
 						name="link"
 						id="link"
-                        required
+						required
 					/>
 					<br />
 					<% availableTimes.forEach(element => { %>
-					<input type="radio" name="time" value="<%= element.getTime() %>" required/>
+					<input
+						type="radio"
+						name="time"
+						value="<%= element.getTime() %>"
+						required
+					/>
 
-                    <% let day = "Today "%>
-                    <% if (element.getDay() != new Date().getDay()) day= "Tomorrow " %>
+					<% let day = "Today "%> <% if (element.getDay() != new
+					Date().getDay()) day= "Tomorrow " %>
 
-					<label for="<%= element.getTime() %>"><%= day + element.getHours() + ":00 - " + element.getHours() + ":59"%></label><br />
+					<label for="<%= element.getTime() %>"
+						><%= day + element.getHours() + ":00 - " + element.getHours()
+						+ ":59"%></label
+					><br />
 					<% }) %>
 					<br />
 					<input type="submit" value="Book" />
@@ -125,7 +134,11 @@
 				<div id="formFooter">
 					<p>You can not undo you booking once it is made!</p>
 				</div>
+                <% } else { %> 
+                    <h1>Sorry, out of times!</h1>
+                    <% } %>
 			</div>
 		</div>
+		
 	</body>
 </html>
