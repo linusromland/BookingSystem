@@ -63,17 +63,12 @@ exports.getInDB = async (Model, search) => {
 	}).limit(10);
 };
 
-exports.getAll = async (Model, search) => {
-	return await Model.find();
+exports.findTime = async (Model, date) => {
+	return await Model.findOne({date: date});
 };
 
-exports.getInDBVerified = async (Model, search) => {
-	const regex = new RegExp(escapeRegex(search), "gi");
-	return await Model.find({
-		$and: [{ $or: [{ name: regex }, { link: regex }] }, { verified: true }],
-	})
-		.sort({ hits: -1 })
-		.limit(10);
+exports.getAll = async (Model, search) => {
+	return await Model.find();
 };
 
 function escapeRegex(text) {

@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const dbModule = require("./dbModule");
+const Ad = require("./Models/Ad");
 const clientdir = __dirname + "/client";
 const fs = require("fs");
 const bodyParser = require("body-parser");
@@ -16,14 +17,13 @@ app.use(
 	})
 );
 
-
 app.get("/", async (req, res) => {
 	res.render("index", {});
 });
 
 app.get("/booking", async (req, res) => {
 	res.render("booking", {
-		availableTimes: generateAvailableTimes(),
+		availableTimes: await generateAvailableTimes(),
 	});
 });
 
@@ -31,12 +31,19 @@ app.get("/iframe", (req, res) => {
 	res.sendFile(clientdir + "/index.html");
 });
 
-app.post("/book", function (req, res) {
-	console.log(req.body.title + req.body.desc + req.body.link + req.body.time);
+app.post("/book", async function (req, res) {
+	let date = new Date();
+	date.setTime(req.body.time);
+	if (!(await checkIfTimeInDB(date))) {
+		dbModule.saveToDB(
+			createAd(req.body.title, req.body.link, req.body.desc, req.body.time)
+		);
+	}
+
 	res.redirect("https://romland.space/");
 });
 
-function generateAvailableTimes() {
+async function generateAvailableTimes() {
 	let availableTimes = [];
 	let date = new Date();
 	let unixTime = new Date().getTime();
@@ -46,7 +53,9 @@ function generateAvailableTimes() {
 		tmp.setMinutes(0);
 		tmp.setSeconds(0);
 		tmp.setMilliseconds(0);
-		availableTimes.push(tmp);
+		if (!(await checkIfTimeInDB(tmp))) {
+			availableTimes.push(tmp);
+		}
 	}
 	return availableTimes;
 }
@@ -58,6 +67,23 @@ function connectToMongo(dbName, connectURL) {
 	} else {
 		dbModule.cnctDB(dbName, connectURL);
 	}
+}
+
+async function checkIfTimeInDB(time) {
+	return await dbModule.findTime(Ad, time);
+}
+
+function createAd(titleIN, linkIN, descIN, timeIN) {
+	let date = new Date();
+	date.setTime(timeIN);
+	console.log(date);
+	let tmp = new Ad({
+		title: titleIN,
+		link: linkIN,
+		desc: descIN,
+		date: date,
+	});
+	return tmp;
 }
 
 app.listen(port, () => console.log(`Server listening on port ${port}!`));
