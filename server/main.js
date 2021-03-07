@@ -19,7 +19,13 @@ app.use(
 
 app.get("/", async (req, res) => {
     let event = await getCurrentEvent();
-    console.log(event)
+    if(!event){
+        event = {
+            title: "Show your ad here!",
+            desc: "Get you ads here for free",
+            link: "https://book.romland.space/booking"
+        }
+    }
 	res.render("index", {
         event: event
     });
