@@ -23,7 +23,7 @@ app.get("/", async (req, res) => {
         event = {
             title: "Show your ad here!",
             desc: "Get you ads here for free",
-            link: "https://book.romland.space/booking"
+            link: "https://ad.romland.space/booking"
         }
     }
 	res.render("index", {
